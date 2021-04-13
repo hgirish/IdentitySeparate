@@ -4,11 +4,11 @@ using System;
 
 namespace IdentitySeparate.Identity
 {
-    public class IdentityRole : IRole<Guid>
+    public class IdentityRole : IRole<string>
     {
         public IdentityRole()
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid().ToString();
         }
 
         public IdentityRole(string name)
@@ -17,13 +17,13 @@ namespace IdentitySeparate.Identity
             Name = name;
         }
 
-        public IdentityRole(string name, Guid id)
+        public IdentityRole(string name, string id)
         {
             Name = name;
             Id = id;
         }
 
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
     }
 }

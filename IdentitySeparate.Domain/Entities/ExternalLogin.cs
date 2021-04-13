@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IdentitySeparate.Domain.Entities
 {
@@ -9,7 +10,8 @@ namespace IdentitySeparate.Domain.Entities
         #region Scalar Properties
         public virtual string LoginProvider { get; set; }
         public virtual string ProviderKey { get; set; }
-        public virtual Guid UserId { get; set; }
+        //[Column("UserId", TypeName = "UniqueIdentifier")]
+        public virtual string UserId { get; set; } = Guid.NewGuid().ToString();
         #endregion
 
         #region Navigation Properties

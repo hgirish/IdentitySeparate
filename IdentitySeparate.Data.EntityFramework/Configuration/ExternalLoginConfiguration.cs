@@ -26,7 +26,7 @@ namespace IdentitySeparate.Data.EntityFramework.Configuration
 
             Property(x => x.UserId)
                 .HasColumnName("UserId")
-                .HasColumnType("uniqueidentifier")
+               // .HasColumnType("uniqueidentifier")
                 .IsRequired();
 
             HasRequired(x => x.User)

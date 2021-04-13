@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IdentitySeparate.Identity
 {
-    public class RoleStore : IRoleStore<IdentityRole, Guid>, IQueryableRoleStore<IdentityRole, Guid>, IDisposable
+    public class RoleStore : IRoleStore<IdentityRole>, IQueryableRoleStore<IdentityRole>, IDisposable
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -41,7 +41,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public System.Threading.Tasks.Task<IdentityRole> FindByIdAsync(Guid roleId)
+        public System.Threading.Tasks.Task<IdentityRole> FindByIdAsync(string roleId)
         {
             var role = _unitOfWork.RoleRepository.FindById(roleId);
             return Task.FromResult<IdentityRole>(getIdentityRole(role));
@@ -105,6 +105,8 @@ namespace IdentitySeparate.Identity
                 Name = role.Name
             };
         }
+
+       
         #endregion
     }
 }

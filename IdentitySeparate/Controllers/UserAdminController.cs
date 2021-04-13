@@ -1,10 +1,11 @@
 ﻿using IdentitySample.Models;
-using Microsoft.AspNet.Identity.Owin;
-using System.Data.Entity;
+using IdentitySeparate.Extensions;
+using IdentitySeparate.Identity;
+using Microsoft.AspNet.Identity;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace IdentitySample.Controllers
@@ -12,48 +13,24 @@ namespace IdentitySample.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersAdminController : Controller
     {
-        public UsersAdminController()
-        {
-        }
+        public UserManager<ApplicationUser> UserManager { get; }
+        public RoleManager<IdentityRole> RoleManager { get; }
 
-        public UsersAdminController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
+        public UsersAdminController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             UserManager = userManager;
             RoleManager = roleManager;
         }
 
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
 
-        private ApplicationRoleManager _roleManager;
-        public ApplicationRoleManager RoleManager
-        {
-            get
-            {
-                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
-            }
-        }
 
         //
         // GET: /Users/
         [HttpGet]
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            return View(await UserManager.Users.ToListAsync());
+            return View(UserManager.Users.ToList());
         }
 
         //
@@ -75,10 +52,10 @@ namespace IdentitySample.Controllers
         //
         // GET: /Users/Create
         [HttpGet]
-        public async Task<ActionResult> Create()
+        public ActionResult Create()
         {
             //Get the list of Roles
-            ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
+            ViewBag.RoleId = new SelectList(RoleManager.Roles.ToList(), "Name", "Name");
             return View();
         }
 
@@ -102,7 +79,7 @@ namespace IdentitySample.Controllers
                         if (!result.Succeeded)
                         {
                             ModelState.AddModelError("", result.Errors.First());
-                            ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
+                            ViewBag.RoleId = new SelectList( RoleManager.Roles.ToList(), "Name", "Name");
                             return View();
                         }
                     }
@@ -139,7 +116,7 @@ namespace IdentitySample.Controllers
 
             return View(new EditUserViewModel()
             {
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 Email = user.Email,
                 RolesList = RoleManager.Roles.ToList().Select(x => new SelectListItem()
                 {

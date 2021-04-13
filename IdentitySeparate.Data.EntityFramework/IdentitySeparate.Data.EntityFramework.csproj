@@ -56,6 +56,11 @@
     <Compile Include="Configuration\ExternalLoginConfiguration.cs" />
     <Compile Include="Configuration\RoleConfiguration.cs" />
     <Compile Include="Configuration\UserConfiguration.cs" />
+    <Compile Include="Migrations\202104130431513_Identity.cs" />
+    <Compile Include="Migrations\202104130431513_Identity.designer.cs">
+      <DependentUpon>202104130431513_Identity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ExternalLoginRepository.cs" />
     <Compile Include="Repositories\Repository.cs" />
@@ -72,6 +77,11 @@
       <Project>{E8A7B4D1-1456-4ADE-AD83-A91F2B263A4A}</Project>
       <Name>IdentitySeparate.Domain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202104130431513_Identity.resx">
+      <DependentUpon>202104130431513_Identity.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

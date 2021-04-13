@@ -1,7 +1,9 @@
 ﻿using IdentitySample.Models;
+using IdentitySeparate.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,27 +14,20 @@ namespace IdentitySample.Controllers
     [Authorize]
     public class ManageController : Controller
     {
-        public ManageController()
-        {
-        }
 
-        public ManageController(ApplicationUserManager userManager)
+        public UserManager<ApplicationUser> UserManager { get; }
+        public ManageController(UserManager<ApplicationUser> userManager)
         {
+           
             UserManager = userManager;
         }
-
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
+        private Guid getGuid(string value)
         {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
+            Guid result;
+            Guid.TryParse(value, out result);
+            return result;
         }
+
 
         //
         // GET: /Account/Index
@@ -49,6 +44,7 @@ namespace IdentitySample.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
@@ -65,7 +61,9 @@ namespace IdentitySample.Controllers
         [HttpGet]
         public ActionResult RemoveLogin()
         {
-            var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
+            var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
+            var linkedAccounts = UserManager.GetLogins(userId);
             ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
             return View(linkedAccounts);
         }
@@ -78,6 +76,7 @@ namespace IdentitySample.Controllers
         {
             ManageMessageId? message;
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var result = await UserManager.RemoveLoginAsync(userId, new UserLoginInfo(loginProvider, providerKey));
             if (result.Succeeded)
             {
@@ -114,7 +113,9 @@ namespace IdentitySample.Controllers
                 return View(model);
             }
             // Generate the token and send it
-            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), model.Number);
+            var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
+            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, model.Number);
             if (UserManager.SmsService != null)
             {
                 var message = new IdentityMessage
@@ -155,6 +156,7 @@ namespace IdentitySample.Controllers
         public async Task<ActionResult> EnableTFA()
         {
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             await UserManager.SetTwoFactorEnabledAsync(userId, true);
             var user = await UserManager.FindByIdAsync(userId);
             if (user != null)
@@ -171,6 +173,7 @@ namespace IdentitySample.Controllers
         public async Task<ActionResult> DisableTFA()
         {
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             await UserManager.SetTwoFactorEnabledAsync(userId, false);
             var user = await UserManager.FindByIdAsync(userId);
             if (user != null)
@@ -187,7 +190,9 @@ namespace IdentitySample.Controllers
         {
             // This code allows you exercise the flow without actually sending codes
             // For production use please register a SMS provider in IdentityConfig and generate a code here.
-            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), phoneNumber);
+            var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
+            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, phoneNumber);
             ViewBag.Status = "For DEMO purposes only, the current code is " + code;
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -203,6 +208,7 @@ namespace IdentitySample.Controllers
                 return View(model);
             }
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var result = await UserManager.ChangePhoneNumberAsync(userId, model.PhoneNumber, model.Code);
             if (result.Succeeded)
             {
@@ -224,6 +230,7 @@ namespace IdentitySample.Controllers
         public async Task<ActionResult> RemovePhoneNumber()
         {
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var result = await UserManager.SetPhoneNumberAsync(userId, null);
             if (!result.Succeeded)
             {
@@ -256,6 +263,7 @@ namespace IdentitySample.Controllers
                 return View(model);
             }
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var result = await UserManager.ChangePasswordAsync(userId, model.OldPassword, model.NewPassword);
             if (result.Succeeded)
             {
@@ -287,6 +295,7 @@ namespace IdentitySample.Controllers
             if (ModelState.IsValid)
             {
                 var userId = User.Identity.GetUserId();
+                var userGuid = getGuid(userId);
                 var result = await UserManager.AddPasswordAsync(userId, model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -313,6 +322,7 @@ namespace IdentitySample.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : "";
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var user = await UserManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -343,6 +353,7 @@ namespace IdentitySample.Controllers
         public async Task<ActionResult> LinkLoginCallback()
         {
             var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, userId);
             if (loginInfo == null)
             {
@@ -364,10 +375,16 @@ namespace IdentitySample.Controllers
             }
         }
 
+      
+
         private async Task SignInAsync(ApplicationUser user, bool isPersistent)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, await user.GenerateUserIdentityAsync(UserManager));
+            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent },
+            //  await user.GenerateUserIdentityAsync(UserManager));
+
+            await UserManager.CreateIdentityAsync(user,
+                   DefaultAuthenticationTypes.ApplicationCookie));
         }
 
         private void AddErrors(IdentityResult result)
@@ -380,7 +397,9 @@ namespace IdentitySample.Controllers
 
         private bool HasPassword()
         {
-            var user = UserManager.FindById(User.Identity.GetUserId());
+            var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
+            var user = UserManager.FindById(userId);
             if (user != null)
             {
                 return user.PasswordHash != null;
@@ -390,7 +409,9 @@ namespace IdentitySample.Controllers
 
         private bool HasPhoneNumber()
         {
-            var user = UserManager.FindById(User.Identity.GetUserId());
+            var userId = User.Identity.GetUserId();
+            var userGuid = getGuid(userId);
+            var user = UserManager.FindById(userId);
             if (user != null)
             {
                 return user.PhoneNumber != null;

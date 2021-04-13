@@ -10,7 +10,7 @@ namespace IdentitySeparate.Domain.Entities
         #endregion
 
         #region Scalar Properties
-        public Guid RoleId { get; set; }
+        public string RoleId { get; set; }
         public string Name { get; set; }
         #endregion
 

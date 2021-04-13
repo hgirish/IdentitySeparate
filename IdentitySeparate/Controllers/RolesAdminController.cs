@@ -1,55 +1,36 @@
 ﻿using IdentitySample.Models;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
+using IdentitySeparate.Identity;
+using System;
+using IdentitySeparate.Extensions;
 
 namespace IdentitySample.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class RolesAdminController : Controller
     {
+        public UserManager<ApplicationUser> UserManager { get; }
+        public RoleManager<IdentityRole> RoleManager { get; }
+
         public RolesAdminController()
         {
         }
 
-        public RolesAdminController(ApplicationUserManager userManager,
-            ApplicationRoleManager roleManager)
+        public RolesAdminController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             UserManager = userManager;
             RoleManager = roleManager;
         }
 
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            set
-            {
-                _userManager = value;
-            }
-        }
+       
 
-        private ApplicationRoleManager _roleManager;
-        public ApplicationRoleManager RoleManager
-        {
-            get
-            {
-                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
-            }
-        }
+        
 
         //
         // GET: /Roles/
@@ -128,7 +109,7 @@ namespace IdentitySample.Controllers
             {
                 return HttpNotFound();
             }
-            RoleViewModel roleModel = new RoleViewModel { Id = role.Id, Name = role.Name };
+            RoleViewModel roleModel = new RoleViewModel { Id = role.Id.ToString(), Name = role.Name };
             return View(roleModel);
         }
 

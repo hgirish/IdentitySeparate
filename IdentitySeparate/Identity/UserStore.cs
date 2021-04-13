@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace IdentitySeparate.Identity
 {
-    public class UserStore : IUserLoginStore<IdentityUser, Guid>,
-        IUserClaimStore<IdentityUser, Guid>,
-        IUserRoleStore<IdentityUser, Guid>,
-        IUserPasswordStore<IdentityUser, Guid>,
-        IUserSecurityStampStore<IdentityUser, Guid>,
-        IUserStore<IdentityUser, Guid>,
+    public class UserStore : IUserLoginStore<ApplicationUser>,
+        IUserClaimStore<ApplicationUser>,
+        IUserRoleStore<ApplicationUser>,
+        IUserPasswordStore<ApplicationUser>,
+        IUserSecurityStampStore<ApplicationUser>,
+        IUserStore<ApplicationUser>,
         IDisposable
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +25,7 @@ namespace IdentitySeparate.Identity
             _unitOfWork = unitOfWork;
         }
 
-        public Task AddClaimAsync(IdentityUser user, Claim claim)
+        public Task AddClaimAsync(ApplicationUser user, Claim claim)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -48,7 +48,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public Task AddLoginAsync(IdentityUser user, UserLoginInfo login)
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -71,7 +71,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public Task AddToRoleAsync(IdentityUser user, string roleName)
+        public Task AddToRoleAsync(ApplicationUser user, string roleName)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -91,7 +91,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task CreateAsync(IdentityUser user)
+        public async Task CreateAsync(ApplicationUser user)
         {
             if (user == null)
             {
@@ -103,7 +103,7 @@ namespace IdentitySeparate.Identity
         }
 
         
-        public async Task DeleteAsync(IdentityUser user)
+        public async Task DeleteAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -119,33 +119,33 @@ namespace IdentitySeparate.Identity
             // Dispose does nothing since we want Unity to manage the lifecycle of our Unit of Work
         }
 
-        public Task<IdentityUser> FindAsync(UserLoginInfo login)
+        public Task<ApplicationUser> FindAsync(UserLoginInfo login)
         {
             if (login == null)
                 throw new ArgumentNullException("login");
 
-            var identityUser = default(IdentityUser);
+            var identityUser = default(ApplicationUser);
 
             var l = _unitOfWork.ExternalLoginRepository.GetByProviderAndKey(login.LoginProvider, login.ProviderKey);
             if (l != null)
                 identityUser = getIdentityUser(l.User);
 
-            return Task.FromResult<IdentityUser>(identityUser);
+            return Task.FromResult<ApplicationUser>(identityUser);
         }
 
-        public Task<IdentityUser> FindByIdAsync(Guid userId)
+        public Task<ApplicationUser> FindByIdAsync(string userId)
         {
             var user = _unitOfWork.UserRepository.FindById(userId);
-            return Task.FromResult<IdentityUser>(getIdentityUser(user));
+            return Task.FromResult<ApplicationUser>(getIdentityUser(user));
         }
 
-        public Task<IdentityUser> FindByNameAsync(string userName)
+        public Task<ApplicationUser> FindByNameAsync(string userName)
         {
             var user = _unitOfWork.UserRepository.FindByUserName(userName);
-            return Task.FromResult<IdentityUser>(getIdentityUser(user));
+            return Task.FromResult<ApplicationUser>(getIdentityUser(user));
         }
 
-        public Task<IList<Claim>> GetClaimsAsync(IdentityUser user)
+        public Task<IList<Claim>> GetClaimsAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -157,7 +157,7 @@ namespace IdentitySeparate.Identity
             return Task.FromResult<IList<Claim>>(u.Claims.Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList());
         }
 
-        public Task<IList<UserLoginInfo>> GetLoginsAsync(IdentityUser user)
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -169,14 +169,14 @@ namespace IdentitySeparate.Identity
             return Task.FromResult<IList<UserLoginInfo>>(u.Logins.Select(x => new UserLoginInfo(x.LoginProvider, x.ProviderKey)).ToList());
         }
 
-        public Task<string> GetPasswordHashAsync(IdentityUser user)
+        public Task<string> GetPasswordHashAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
             return Task.FromResult<string>(user.PasswordHash);
         }
 
-        public Task<IList<string>> GetRolesAsync(IdentityUser user)
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -188,21 +188,21 @@ namespace IdentitySeparate.Identity
             return Task.FromResult<IList<string>>(u.Roles.Select(x => x.Name).ToList());
         }
 
-        public Task<string> GetSecurityStampAsync(IdentityUser user)
+        public Task<string> GetSecurityStampAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
             return Task.FromResult<string>(user.SecurityStamp);
         }
 
-        public Task<bool> HasPasswordAsync(IdentityUser user)
+        public Task<bool> HasPasswordAsync(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
             return Task.FromResult<bool>(!string.IsNullOrWhiteSpace(user.PasswordHash));
         }
 
-        public Task<bool> IsInRoleAsync(IdentityUser user, string roleName)
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -216,7 +216,7 @@ namespace IdentitySeparate.Identity
             return Task.FromResult<bool>(u.Roles.Any(x => x.Name == roleName));
         }
 
-        public Task RemoveClaimAsync(IdentityUser user, Claim claim)
+        public Task RemoveClaimAsync(ApplicationUser user, Claim claim)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -234,7 +234,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public Task RemoveFromRoleAsync(IdentityUser user, string roleName)
+        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -252,7 +252,7 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public Task RemoveLoginAsync(IdentityUser user, UserLoginInfo login)
+        public Task RemoveLoginAsync(ApplicationUser user, UserLoginInfo login)
         {
             if (user == null)
                 throw new ArgumentNullException("user");
@@ -270,19 +270,19 @@ namespace IdentitySeparate.Identity
             return _unitOfWork.SaveChangesAsync();
         }
 
-        public Task SetPasswordHashAsync(IdentityUser user, string passwordHash)
+        public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash)
         {
             user.PasswordHash = passwordHash;
             return Task.FromResult(0);
         }
 
-        public Task SetSecurityStampAsync(IdentityUser user, string stamp)
+        public Task SetSecurityStampAsync(ApplicationUser user, string stamp)
         {
             user.SecurityStamp = stamp;
             return Task.FromResult(0);
         }
 
-        public async Task UpdateAsync(IdentityUser user)
+        public async Task UpdateAsync(ApplicationUser user)
         {
 
             if (user == null)
@@ -298,7 +298,7 @@ namespace IdentitySeparate.Identity
             await _unitOfWork.SaveChangesAsync();
         }
 
-        private Domain.Entities.User getUser(IdentityUser identityUser)
+        private Domain.Entities.User getUser(ApplicationUser identityUser)
         {
             if (identityUser == null)
             {
@@ -308,7 +308,7 @@ namespace IdentitySeparate.Identity
             populateUser(user, identityUser);
             return user;
         }
-        private void populateUser(Domain.Entities.User user, IdentityUser identityUser)
+        private void populateUser(Domain.Entities.User user, ApplicationUser identityUser)
         {
             user.UserId = identityUser.Id;
             user.UserName = identityUser.UserName;
@@ -316,17 +316,17 @@ namespace IdentitySeparate.Identity
             user.SecurityStamp = identityUser.SecurityStamp;
         }
 
-        private IdentityUser getIdentityUser(Domain.Entities.User user)
+        private ApplicationUser getIdentityUser(Domain.Entities.User user)
         {
             if (user == null)
             {
                 return null;
             }
-            var identityUser = new IdentityUser();
+            var identityUser = new ApplicationUser();
             populateIdentityUser(identityUser, user);
             return identityUser;
         }
-        private void populateIdentityUser(IdentityUser identityUser, Domain.Entities.User user)
+        private void populateIdentityUser(ApplicationUser identityUser, Domain.Entities.User user)
         {
             identityUser.Id = user.UserId;
             identityUser.UserName = user.UserName;

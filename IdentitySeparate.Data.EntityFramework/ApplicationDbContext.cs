@@ -2,13 +2,14 @@ using IdentitySeparate.Data.EntityFramework.Configuration;
 using IdentitySeparate.Domain.Entities;
 
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 
 namespace IdentitySeparate.Data.EntityFramework
 {
-    internal class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        internal ApplicationDbContext(string nameOrConnectionString)
+        public ApplicationDbContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
         }
@@ -25,4 +26,15 @@ namespace IdentitySeparate.Data.EntityFramework
             modelBuilder.Configurations.Add(new ClaimConfiguration());
         }
     }
+
+    public class ApplicationDbContextFactory : IDbContextFactory<ApplicationDbContext>
+    {
+        public ApplicationDbContext Create()
+        {
+            return new ApplicationDbContext("IdentitySeparate");
+        }
+    }
+
+
 }
+

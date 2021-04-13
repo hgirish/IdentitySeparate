@@ -13,7 +13,7 @@ namespace IdentitySeparate.Data.EntityFramework.Configuration
             HasKey(x => x.RoleId)
                 .Property(x => x.RoleId)
                 .HasColumnName("RoleId")
-                .HasColumnType("uniqueidentifier")
+               // .HasColumnType("uniqueidentifier")
                 .IsRequired();
 
             Property(x => x.Name)

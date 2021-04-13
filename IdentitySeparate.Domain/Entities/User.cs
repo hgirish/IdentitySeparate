@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IdentitySeparate.Domain.Entities
 {
@@ -13,7 +13,8 @@ namespace IdentitySeparate.Domain.Entities
         #endregion
 
         #region Scalar Properties
-        public Guid UserId { get; set; }
+        //[Column("UserId",TypeName = "UniqueIdentifier")]
+        public string UserId { get; set; }
         public string UserName { get; set; }
         public virtual string PasswordHash { get; set; }
         public virtual string SecurityStamp { get; set; }
