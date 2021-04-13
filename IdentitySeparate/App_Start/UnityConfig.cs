@@ -25,7 +25,16 @@ namespace IdentitySeparate
             container.RegisterType<IUnitOfWork, UnitOfWork>(new HierarchicalLifetimeManager(), new InjectionConstructor("IdentitySeparate"));
             container.RegisterType<IUserStore<ApplicationUser,string>, UserStore>(new TransientLifetimeManager());
             container.RegisterType<IUserStore<ApplicationUser>, UserStore>(new TransientLifetimeManager());
-            container.RegisterType<UserManager<ApplicationUser>>(new HierarchicalLifetimeManager());
+            container.RegisterType<ApplicationUserManager>(new HierarchicalLifetimeManager());
+
+            container.RegisterType<ApplicationDbContext>();
+            //container.RegisterType<ApplicationSignInManager>();
+            container.RegisterType<ApplicationUserManager>();
+            //container.RegisterType<ApplicationRoleManager>();
+
+            container.RegisterType<IIdentityMessageService, EmailService>("production");
+            //container.RegisterType<IIdentityMessageService, MailtrapEmailService>("debugging");
+
 
             container.RegisterType<RoleStore>(new TransientLifetimeManager());
             container.RegisterType<SignInManager<ApplicationUser,string>>();

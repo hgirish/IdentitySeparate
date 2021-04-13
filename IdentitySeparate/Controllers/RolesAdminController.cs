@@ -1,4 +1,4 @@
-﻿using IdentitySample.Models;
+﻿using IdentitySeparate.Models;
 using Microsoft.AspNet.Identity;
 using System.Linq;
 using System.Net;
@@ -9,19 +9,19 @@ using IdentitySeparate.Identity;
 using System;
 using IdentitySeparate.Extensions;
 
-namespace IdentitySample.Controllers
+namespace IdentitySeparate.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class RolesAdminController : Controller
     {
-        public UserManager<ApplicationUser> UserManager { get; }
+        public ApplicationUserManager UserManager { get; }
         public RoleManager<IdentityRole> RoleManager { get; }
 
         public RolesAdminController()
         {
         }
 
-        public RolesAdminController(UserManager<ApplicationUser> userManager,
+        public RolesAdminController(ApplicationUserManager userManager,
             RoleManager<IdentityRole> roleManager)
         {
             UserManager = userManager;

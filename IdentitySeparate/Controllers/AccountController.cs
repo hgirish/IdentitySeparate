@@ -1,4 +1,4 @@
-﻿using IdentitySample.Models;
+﻿using IdentitySeparate.Models;
 using IdentitySeparate.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace IdentitySample.Controllers
+namespace IdentitySeparate.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<ApplicationUser,string> _signInManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser,string> signInManager)
+        public AccountController(ApplicationUserManager userManager, SignInManager<ApplicationUser,string> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

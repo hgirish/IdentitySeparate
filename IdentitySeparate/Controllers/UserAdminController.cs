@@ -1,4 +1,4 @@
-﻿using IdentitySample.Models;
+﻿using IdentitySeparate.Models;
 using IdentitySeparate.Extensions;
 using IdentitySeparate.Identity;
 using Microsoft.AspNet.Identity;
@@ -8,15 +8,15 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace IdentitySample.Controllers
+namespace IdentitySeparate.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class UsersAdminController : Controller
     {
-        public UserManager<ApplicationUser> UserManager { get; }
+        public ApplicationUserManager UserManager { get; }
         public RoleManager<IdentityRole> RoleManager { get; }
 
-        public UsersAdminController(UserManager<ApplicationUser> userManager,
+        public UsersAdminController(ApplicationUserManager userManager,
             RoleManager<IdentityRole> roleManager)
         {
             UserManager = userManager;

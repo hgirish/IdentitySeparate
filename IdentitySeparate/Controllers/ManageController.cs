@@ -1,4 +1,4 @@
-﻿using IdentitySample.Models;
+﻿using IdentitySeparate.Models;
 using IdentitySeparate.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace IdentitySample.Controllers
+namespace IdentitySeparate.Controllers
 {
     [Authorize]
     public class ManageController : Controller
     {
 
-        public UserManager<ApplicationUser> UserManager { get; }
-        public ManageController(UserManager<ApplicationUser> userManager)
+        public ApplicationUserManager UserManager { get; }
+        public ManageController(ApplicationUserManager userManager)
         {
            
             UserManager = userManager;
